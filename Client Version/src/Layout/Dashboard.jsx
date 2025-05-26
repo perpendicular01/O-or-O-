@@ -3,16 +3,27 @@ import { BsCalendarHeartFill } from 'react-icons/bs';
 import { FaCalendarAlt, FaShoppingBag, FaShoppingCart, FaUsers, FaUtensils } from 'react-icons/fa';
 import { IoMdHome } from 'react-icons/io';
 import { MdEmail, MdMenu, MdPayments, MdReviews } from 'react-icons/md';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 // import useCart from '../hooks/useCart';
 import { TfiMenuAlt } from 'react-icons/tfi';
 import { BiSolidFoodMenu } from 'react-icons/bi';
+import useAuth from '../hooks/useAuth';
 // import useAdmin from '../hooks/useAdmin';
 
 const Dashboard = () => {
+    const {  logOut } = useAuth();
+    const navigate = useNavigate();
 
+    const handleSignOut = async (e) => {
+        e.preventDefault();
 
+        try {
+            await logOut()
+            navigate('/login')
+        }
+        catch { /* empty */ }
+    }
 
 
 
@@ -118,7 +129,9 @@ const Dashboard = () => {
                             to="/logout"
                             className=' text-black rounded-lg hover:bg-blue-100 absolute bottom-0'
                         >
-                            <button className='btn px-16 rounded-xl border-redd flex items-center gap-2'>
+                            <button
+                            onClick={handleSignOut}
+                            className='btn px-16 rounded-xl border-redd flex items-center gap-2'>
                                 <h2 className='uppercase text-md'> Logout </h2>
                             </button>
                         </NavLink>

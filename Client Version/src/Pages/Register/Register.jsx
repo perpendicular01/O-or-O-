@@ -10,12 +10,16 @@ import { AuthContext } from '../../providers/AuthProvider';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import SocialLogin from '../../components/SocialLogin/SocialLogin';
 
+const image_hosting_key = import.meta.env.VITE_Image_Upload_token;
+const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`
+
 
 const Register = () => {
     const [districts, setDistricts] = useState([]);
     const [selectedDistrict, setSelectedDistrict] = useState("");
     const [upazilas, setUpazilas] = useState([]);
     const [selectedUpazilas, setSelectedUpazilas] = useState("");
+    console.log(selectedUpazilas, selectedDistrict)
 
 
     const { createUser, updateUserProfile } = useContext(AuthContext)
@@ -38,40 +42,49 @@ const Register = () => {
     } = useForm()
 
 
-    const onSubmit = (data) => {
-        console.log(data)
-        // createUser(data.email, data.password)
-        //     .then(result => {
-        //         const loggedUser = result.user;
-        //         console.log(loggedUser)
-        //         updateUserProfile(data.name, data.photo)
-        //             .then(() => {
-        //                 const userInfo = {
+    const onSubmit = async (data) => {
+        try {
+            const result = await createUser(data.email, data.password);
+            const loggedUser = result.user;
+            console.log(loggedUser);
 
-        //                 };
-        //                 axiosPublic.post('/users', userInfo)
-        //                     .then(res => {
-        //                         if (res.data.insertedId) {
-        //                             console.log("profile updated")
-        //                             console.log(loggedUser)
-        //                             Swal.fire({
-        //                                 title: "successfully registered",
-        //                                 icon: "success"
-        //                             });
+            const imageFile = { image: data.image[0] };
+            const res1 = await axiosPublic.post(image_hosting_api, imageFile, {
+                headers: {
+                    "content-type": "multipart/form-data",
+                },
+            });
 
-        //                             reset();
-        //                             navigate(from, { replace: true })
-        //                         }
+            if (res1.data.success) {
+                await updateUserProfile(data.name, res1.data.data.display_url);
 
-        //                     })
+                const userInfo = {
+                    name: data.name,
+                    email: data.email,
+                    group: data.group,
+                    district: data.district,
+                    upazila: data.upazila,
+                    image: res1.data.data.display_url,
+                    role: "user",
+                    firebaseUid: loggedUser.uid
+                };
 
-        //             })
-        //             .catch((error) => {
-        //                 console.log(error)
-        //             })
-        //     })
+                const res2 = await axiosPublic.post("/users", userInfo);
+                if (res2.data.insertedId) {
+                    Swal.fire({
+                        title: "Successfully registered",
+                        icon: "success"
+                    });
+                    reset();
+                    navigate(from, { replace: true });
+                }
+            }
 
-    }
+        } catch (error) {
+            console.error("Registration error", error);
+        }
+    };
+
 
 
     useEffect(() => {

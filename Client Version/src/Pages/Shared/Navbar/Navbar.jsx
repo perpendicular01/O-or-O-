@@ -114,9 +114,9 @@ const Navbar = () => {
                                 <Link>
                                     <button
                                         onClick={handleSignOut}
-                                        className={`px-2 md:px-4 py-2 rounded-lg text-sm md:text-base font-medium ${path === 'login'
-                                            ? 'text-white bg-[#6C5B1D]'
-                                            : 'bg-[#BAC2CA] text-black hover:bg-gray-700 hover:text-white'
+                                        className={`px-2 md:px-3 py-1 rounded-lg text-sm md:text-base font-medium ${path === 'login'
+                                            ? 'text-white bg-redd hover:bg-redd/90'
+                                            : 'bg-white border-redd border-[1px] text-redd hover:bg-redd hover:text-white'
                                             }`}
                                     >
                                         Logout
