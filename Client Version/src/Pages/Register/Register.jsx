@@ -66,6 +66,7 @@ const Register = () => {
                     upazila: data.upazila,
                     image: res1.data.data.display_url,
                     role: "user",
+                    isBlocked: false,
                     firebaseUid: loggedUser.uid
                 };
 

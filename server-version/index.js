@@ -56,6 +56,7 @@ async function run() {
 
     const database = client.db('OorO')
     const userCollection = database.collection('users')
+    const donationRequestCollection = database.collection('donationRequests');
 
     // verify the admin 
     const verifyAdmin = async (req, res, next) => {
@@ -128,16 +129,63 @@ async function run() {
     // check admin or not
     app.get('/users/admin/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
-    
+
       if (email !== req.user.email) {
         return res.status(403).send({ message: 'unauthorized access' });
       }
-    
+
       const user = await userCollection.findOne({ email });
       const isAdmin = user?.role === 'admin';
       res.send({ admin: isAdmin });
     });
-    
+
+    app.get('/users/profile/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+
+      if (email !== req.user.email) {
+        return res.status(403).send({ message: 'unauthorized access' });
+      }
+
+      try {
+        const query = { email: email };
+        const user = await userCollection.findOne(query);
+
+        if (!user) {
+          return res.status(404).json({ message: 'User not found in database' });
+        }
+
+        res.send(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ message: 'Failed to fetch user' });
+      }
+    });
+
+    app.patch('/users/profile/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+
+      if (email !== req.user.email) {
+        return res.status(403).send({ message: 'unauthorized access' });
+      }
+
+      try {
+        const filter = { email: email };
+        const updatedDoc = {
+          $set: req.body, // Assuming the request body contains the updated user data
+        };
+
+        const result = await userCollection.updateOne(filter, updatedDoc);
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ message: 'User not found or no changes applied' });
+        }
+
+        res.send({ success: true, modifiedCount: result.modifiedCount });
+      } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ message: 'Failed to update user' });
+      }
+    });
 
     app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
       const { id } = req.params;
@@ -160,7 +208,55 @@ async function run() {
       }
     });
 
+    // Donation Requests
+    app.post('/donationRequests', verifyToken, async (req, res) => {
+      const user = req.user;
+      if (!user) {
+        return res.status(401).send({ message: 'unauthorized access' });
+      }
 
+      const requesterEmail = user.email;
+      const query = { email: requesterEmail }
+      const exitingUser = await userCollection.findOne(query)
+      if (exitingUser?.isBlocked) {
+        return res.status(403).send({ message: 'You are blocked from creating donation requests.' });
+      }
+
+      const donationRequest = req.body;
+
+      try {
+        const result = await donationRequestCollection.insertOne(donationRequest);
+        console.log(result);
+        res.send({ success: true, insertedId: result.insertedId });
+      } catch (error) {
+        console.error('Error creating donation request:', error);
+        res.status(500).send({ message: 'Failed to create donation request.', error: error.message });
+      }
+    });
+
+    // Get donation requests by email and status
+    app.get('/donationRequests', verifyToken, async (req, res) => {
+      const userEmail = req.query.email;
+      const status = req.query.status;
+
+      if (!userEmail) {
+        return res.status(400).send({ message: 'Email is required' });
+      }
+
+      let query = { requesterEmail: userEmail };
+      if (status && status !== 'all') {
+        query.donationStatus = status;
+      }
+
+      try {
+        const donationRequestCollection = database.collection('donationRequests');
+        const donationRequests = await donationRequestCollection.find(query).toArray();
+        res.send(donationRequests);
+      } catch (error) {
+        console.error('Error fetching donation requests:', error);
+        res.status(500).send({ message: 'Failed to fetch donation requests', error: error.message });
+      }
+    });
 
 
     await client.db("admin").command({ ping: 1 });

@@ -65,7 +65,7 @@ const Dashboard = () => {
 
                         <li>
                             <NavLink
-                                to="/dashboard/addItems"
+                                to="/dashboard/profile"
                                 className={({ isActive }) =>
                                     isActive
                                         ? 'bg-redd text-white rounded-lg'
@@ -83,7 +83,7 @@ const Dashboard = () => {
 
                         <li>
                             <NavLink
-                                to="/dashboard/mangeItems"
+                                to="/dashboard/my-donation-requests"
                                 className={({ isActive }) =>
                                     isActive
                                         ? 'bg-redd text-white rounded-lg'
@@ -102,7 +102,7 @@ const Dashboard = () => {
 
                         <li>
                             <NavLink
-                                to="/dashboard/manageBookings"
+                                to="/dashboard/create-donation-request"
                                 className={({ isActive }) =>
                                     isActive
                                         ? 'bg-redd text-white rounded-lg'
@@ -140,7 +140,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Main Content Area */}
-                <div className='flex-1 bg-gray-200'>
+                <div className='flex-1 bg-gray-50'>
                     <Outlet></Outlet>
 
                 </div>

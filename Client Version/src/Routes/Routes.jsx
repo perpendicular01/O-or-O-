@@ -7,6 +7,9 @@ import Main from "../Layout/Main";
 import Login from "../Pages/Login/Login";
 import Register from "../Pages/Register/Register";
 import Dashboard from "../Layout/Dashboard";
+import Request from "../Pages/Dashboard/Donor/Request/Request";
+import MyRequest from "../Pages/Dashboard/Donor/MyRequest/MyRequest";
+import Profile from "../Pages/Dashboard/Profile/Profile";
 
 
 export const router = createBrowserRouter([
@@ -32,6 +35,21 @@ export const router = createBrowserRouter([
     },
     {
         path: 'dashboard',
-        element: <Dashboard></Dashboard>
+        element: <Dashboard></Dashboard>,
+        children: [
+            {
+                path: 'profile',
+                element: <Profile></Profile>
+            },
+            {
+                path: 'create-donation-request',
+                element: <Request></Request>
+            },
+            {
+                path: 'my-donation-requests',
+                element: <MyRequest></MyRequest>
+            }
+
+        ]
     },
 ]);

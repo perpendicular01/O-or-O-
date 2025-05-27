@@ -72,7 +72,7 @@ const Login = () => {
             <div className="   bg-center w-full flex flex-col md:flex-row gap-10 items-center justify-center bg-redd/5  rounded-lg shadow-[10px_10px_20px_rgba(0,0,0,0.9)] max-w-3xl lg:max-w-6xl p-8 ">
                 {/* Lottie Animation Section */}
                 <div classNFame="w-1/2 md:w-2/5  flex items-center justify-center">
-                    <div className="max-w-sm">
+                    <div className="max-w-60">
                         <Lottie animationData={animation} loop={true} />
                     </div>
                 </div>
