@@ -9,11 +9,20 @@ import logo from '../assets/logo.png';
 import { TfiMenuAlt } from 'react-icons/tfi';
 import { BiSolidFoodMenu } from 'react-icons/bi';
 import useAuth from '../hooks/useAuth';
+import useAdmin from '../hooks/useAdmin';
+import useVolenteer from '../hooks/useVolenteer';
+import useDonor from '../hooks/useDonor';
 // import useAdmin from '../hooks/useAdmin';
 
 const Dashboard = () => {
-    const {  logOut } = useAuth();
+    const { logOut } = useAuth();
     const navigate = useNavigate();
+    const [isAdmin] = useAdmin();
+    const [isVolenteer] = useVolenteer();
+    const [isDonor] = useDonor()
+    console.log("is donor", isDonor)
+    console.log("is volenteer", isVolenteer)
+    console.log("is admin", isAdmin)
 
     const handleSignOut = async (e) => {
         e.preventDefault();
@@ -31,7 +40,7 @@ const Dashboard = () => {
         <div>
             <div className='flex'>
                 {/* Sidebar Area */}
-                <div className='relative lg:pl-5 w-[20%] min-h-screen   text-black'>
+                <div className='relative lg:pl-5 w-[22%] min-h-screen   text-black'>
                     {/* <h2 className='mt-5 uppercase text-3xl mr-14 text-center font-bold'> dish</h2>
                     <h2 className='uppercase  text-3xl ml-10 text-center font-bold mb-7'> Dash</h2> */}
                     <div className='flex flex-col justify-center items-center mt-4 mb-8'>
@@ -41,84 +50,274 @@ const Dashboard = () => {
                     </div>
 
 
+                    {/* for donor */}
+                    {
+                        isDonor &&
+                        <ul className='menu p-4  lg:space-y-2'>
 
-                    <ul className='menu p-4  lg:space-y-2'>
 
-
-                        <li>
-                            <NavLink
-                                to="/dashboard/donorHome"
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? 'bg-redd text-white rounded-lg'
-                                        : 'hover:bg-redd/50 rounded-lg'
-                                }
-                            >
-                                <div className='flex items-center justify-center gap-2'>
-                                    <div className='text-2xl'>
-                                        <IoMdHome />
+                            <li>
+                                <NavLink
+                                    to="/dashboard"
+                                    end
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <IoMdHome />
+                                        </div>
+                                        <h2 className=' text-md'> DashBoard </h2>
                                     </div>
-                                    <h2 className=' text-md'> DashBoard </h2>
-                                </div>
-                            </NavLink>
-                        </li>
+                                </NavLink>
+                            </li>
 
-                        <li>
-                            <NavLink
-                                to="/dashboard/profile"
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? 'bg-redd text-white rounded-lg'
-                                        : 'hover:bg-redd/50 rounded-lg'
-                                }
-                            >
-                                <div className='flex items-center justify-center gap-2'>
-                                    <div className='text-2xl'>
-                                        <FaUtensils />
+                            <li>
+                                <NavLink
+                                    to="/dashboard/profile"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <FaUtensils />
+                                        </div>
+                                        <h2 className=' text-md'> Profile </h2>
                                     </div>
-                                    <h2 className=' text-md'> Profile </h2>
-                                </div>
-                            </NavLink>
-                        </li>
+                                </NavLink>
+                            </li>
 
-                        <li>
-                            <NavLink
-                                to="/dashboard/my-donation-requests"
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? 'bg-redd text-white rounded-lg'
-                                        : 'hover:bg-redd/50 rounded-lg'
-                                }
-                            >
-                                <div className='flex items-center justify-center gap-2'>
-                                    <div className='text-2xl'>
-                                        <TfiMenuAlt />
+                            <li>
+                                <NavLink
+                                    to="/dashboard/my-donation-requests"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <TfiMenuAlt />
+                                        </div>
+                                        <h2 className='uppercase text-md'> My Request</h2>
                                     </div>
-                                    <h2 className='uppercase text-md'> My Request</h2>
-                                </div>
-                            </NavLink>
-                        </li>
+                                </NavLink>
+                            </li>
 
 
-                        <li>
-                            <NavLink
-                                to="/dashboard/create-donation-request"
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? 'bg-redd text-white rounded-lg'
-                                        : 'hover:bg-redd/50 rounded-lg'
-                                }
-                            >
-                                <div className='flex items-center justify-center gap-2'>
-                                    <div className='text-2xl'>
-                                        <BiSolidFoodMenu />
+                            <li>
+                                <NavLink
+                                    to="/dashboard/create-donation-request"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <BiSolidFoodMenu />
+                                        </div>
+                                        <h2 className='uppercase text-md'> Create Request </h2>
                                     </div>
-                                    <h2 className='uppercase text-md'> Create Request </h2>
-                                </div>
-                            </NavLink>
-                        </li>
+                                </NavLink>
+                            </li>
 
-                    </ul>
+                        </ul>
+                    }
+
+
+                    {/* for amdin */}
+                    {
+                        isAdmin &&
+                        <ul className='menu p-4  lg:space-y-2'>
+
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard"
+                                    end
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <IoMdHome />
+                                        </div>
+                                        <h2 className=' text-md'> DashBoard </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard/profile"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <FaUtensils />
+                                        </div>
+                                        <h2 className=' text-md'> Profile </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard/all-users"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <FaUtensils />
+                                        </div>
+                                        <h2 className=' text-md'> All Users </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard/my-donation-requests"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <TfiMenuAlt />
+                                        </div>
+                                        <h2 className='uppercase text-md'> Blood Request </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard/create-donation-request"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <BiSolidFoodMenu />
+                                        </div>
+                                        <h2 className='uppercase text-md'> Content Management </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                        </ul>
+                    }
+
+                    {/* for volenteer */}
+                    {
+                        isVolenteer &&
+                        <ul className='menu p-4  lg:space-y-2'>
+
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard"
+                                    end
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <IoMdHome />
+                                        </div>
+                                        <h2 className=' text-md'> DashBoard </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard/profile"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <FaUtensils />
+                                        </div>
+                                        <h2 className=' text-md'> Profile </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard/my-donation-requests"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <TfiMenuAlt />
+                                        </div>
+                                        <h2 className='uppercase text-md'> Blood Request </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+
+                            <li>
+                                <NavLink
+                                    to="/dashboard/create-donation-request"
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? 'bg-redd text-white rounded-lg'
+                                            : 'hover:bg-redd/50 rounded-lg'
+                                    }
+                                >
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <div className='text-2xl'>
+                                            <BiSolidFoodMenu />
+                                        </div>
+                                        <h2 className='uppercase text-md'> Content Management </h2>
+                                    </div>
+                                </NavLink>
+                            </li>
+
+                        </ul>
+                    }
+
 
 
                     <div className="absolute bottom-10 lg:pl-6  p-4">
@@ -130,8 +329,8 @@ const Dashboard = () => {
                             className=' text-black rounded-lg hover:bg-blue-100 absolute bottom-0'
                         >
                             <button
-                            onClick={handleSignOut}
-                            className='btn px-16 rounded-xl border-redd flex items-center gap-2'>
+                                onClick={handleSignOut}
+                                className='btn px-16 rounded-xl border-redd flex items-center gap-2'>
                                 <h2 className='uppercase text-md'> Logout </h2>
                             </button>
                         </NavLink>

@@ -114,6 +114,44 @@ async function run() {
       res.send(result)
     })
 
+    // toggle user block status
+    app.patch('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+
+      // Fetch the user document to get the current isBlocked value
+      const user = await userCollection.findOne(filter);
+
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+
+      const currentIsBlocked = user.isBlocked || false; // Default to false if undefined
+
+      const updatedDoc = {
+        $set: {
+          isBlocked: !currentIsBlocked, // Toggle the value
+        },
+      };
+
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    // make user volenteer
+    app.patch('/users/volenteer/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const updatedDoc = {
+        $set: {
+          role: 'volenteer'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc)
+      res.send(result)
+    })
+
+    // make user admin
     app.patch('/users/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
@@ -125,6 +163,7 @@ async function run() {
       const result = await userCollection.updateOne(filter, updatedDoc)
       res.send(result)
     })
+
 
     // check admin or not
     app.get('/users/admin/:email', verifyToken, async (req, res) => {
@@ -138,6 +177,32 @@ async function run() {
       const isAdmin = user?.role === 'admin';
       res.send({ admin: isAdmin });
     });
+
+    app.get('/users/donor/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+
+      if (email !== req.user.email) {
+        return res.status(403).send({ message: 'unauthorized access' });
+      }
+
+      const user = await userCollection.findOne({ email });
+      const isDonor = user?.role === 'donor';
+      res.send({ donor: isDonor });
+    });
+
+    // check volenteer or not
+    app.get('/users/volenteer/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+
+      if (email !== req.user.email) {
+        return res.status(403).send({ message: 'unauthorized access' });
+      }
+
+      const user = await userCollection.findOne({ email });
+      const isVolenteer = user?.role === 'volenteer';
+      res.send({ volenteer: isVolenteer });
+    });
+
 
     app.get('/users/profile/:email', verifyToken, async (req, res) => {
       const email = req.params.email;

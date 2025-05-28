@@ -6,6 +6,7 @@ import useAxiosPublic from '../../../hooks/useAxiosPublic';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 const image_hosting_key = import.meta.env.VITE_Image_Upload_token;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`
 
@@ -25,6 +26,8 @@ const Profile = () => {
     const [bloodGroup, setBloodGroup] = useState('');
     const [district, setDistrict] = useState('');
     const [upazila, setUpazila] = useState('');
+    
+    console.log(user)
 
 
     useEffect(() => {

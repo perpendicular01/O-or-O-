@@ -10,6 +10,8 @@ import Dashboard from "../Layout/Dashboard";
 import Request from "../Pages/Dashboard/Donor/Request/Request";
 import MyRequest from "../Pages/Dashboard/Donor/MyRequest/MyRequest";
 import Profile from "../Pages/Dashboard/Profile/Profile";
+import DonorHome from "../Pages/Dashboard/Donor/DonorHome/DonorHome";
+import AllUsers from "../Pages/Dashboard/Admin/AllUsers/AllUsers";
 
 
 export const router = createBrowserRouter([
@@ -38,6 +40,10 @@ export const router = createBrowserRouter([
         element: <Dashboard></Dashboard>,
         children: [
             {
+                path: '',
+                element: <DonorHome></DonorHome>
+            },
+            {
                 path: 'profile',
                 element: <Profile></Profile>
             },
@@ -48,6 +54,10 @@ export const router = createBrowserRouter([
             {
                 path: 'my-donation-requests',
                 element: <MyRequest></MyRequest>
+            },
+            {
+                path: 'all-users',
+                element: <AllUsers></AllUsers>
             }
 
         ]

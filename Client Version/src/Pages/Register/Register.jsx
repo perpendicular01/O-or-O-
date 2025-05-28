@@ -65,7 +65,7 @@ const Register = () => {
                     district: data.district,
                     upazila: data.upazila,
                     image: res1.data.data.display_url,
-                    role: "user",
+                    role: "donor",
                     isBlocked: false,
                     firebaseUid: loggedUser.uid
                 };
