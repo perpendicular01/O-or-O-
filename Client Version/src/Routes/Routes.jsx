@@ -12,6 +12,7 @@ import MyRequest from "../Pages/Dashboard/Donor/MyRequest/MyRequest";
 import Profile from "../Pages/Dashboard/Profile/Profile";
 import DonorHome from "../Pages/Dashboard/Donor/DonorHome/DonorHome";
 import AllUsers from "../Pages/Dashboard/Admin/AllUsers/AllUsers";
+import UpdateRequest from "../Pages/Dashboard/UpdateRequest/UpdateRequest";
 
 
 export const router = createBrowserRouter([
@@ -58,6 +59,11 @@ export const router = createBrowserRouter([
             {
                 path: 'all-users',
                 element: <AllUsers></AllUsers>
+            },
+            {
+                path: 'update-request/:id',
+                element: <UpdateRequest></UpdateRequest>,
+                loader: ({ params }) => fetch(`http://localhost:5000/donationRequests/${params.id}`),
             }
 
         ]

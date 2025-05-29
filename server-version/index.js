@@ -47,6 +47,8 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -273,7 +275,7 @@ async function run() {
       }
     });
 
-    // Donation Requests
+    // Donation Requests post
     app.post('/donationRequests', verifyToken, async (req, res) => {
       const user = req.user;
       if (!user) {
@@ -320,6 +322,89 @@ async function run() {
       } catch (error) {
         console.error('Error fetching donation requests:', error);
         res.status(500).send({ message: 'Failed to fetch donation requests', error: error.message });
+      }
+    });
+
+    // Get specific donation request by ID
+    app.get('/donationRequests/:id', async (req, res) => {
+      const id = req.params.id;
+
+      try {
+        const donationRequest = await donationRequestCollection.findOne({ _id: new ObjectId(id) });
+        if (!donationRequest) {
+          return res.status(404).send({ message: 'Donation request not found' });
+        }
+        res.send(donationRequest);
+      } catch (error) {
+        console.error('Error fetching donation request:', error);
+        res.status(500).send({ message: 'Failed to fetch donation request', error: error.message });
+      }
+    });
+
+    // update donation request by ID
+    app.put('/donationRequests/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const donationRequest = req.body;
+
+      try {
+        const result = await donationRequestCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: donationRequest }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).send({ message: 'Donation request not found' });
+        }
+
+        res.send({ success: true, modifiedCount: result.modifiedCount });
+      } catch (error) {
+        console.error('Error updating donation request:', error);
+        res.status(500).send({ message: 'Failed to update donation request', error: error.message });
+      }
+    });
+
+
+    // delete donation request by ID
+    app.delete('/donationRequests/:id', verifyToken, async (req, res) => {
+      const { id } = req.params;
+
+      try {
+        const query = { _id: new ObjectId(id) };
+        const donationRequest = await donationRequestCollection.findOne(query);
+
+        if (!donationRequest) {
+          return res.status(404).json({ message: 'Donation Request not found in database' });
+        }
+
+
+        const deleteResult = await donationRequestCollection.deleteOne(query);
+        res.send({ success: true, deletedCount: deleteResult.deletedCount });
+
+      } catch (error) {
+        console.error("Error deleting donation Request:", error);
+        res.status(500).json({ message: 'Failed to delete user' });
+      }
+    });
+
+    // update donation request status by ID
+    app.patch('/donationRequests/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const { donationStatus } = req.body;
+
+      try {
+        const result = await donationRequestCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { donationStatus: donationStatus } }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).send({ message: 'Donation request not found' });
+        }
+
+        res.send({ success: true, modifiedCount: result.modifiedCount });
+      } catch (error) {
+        console.error('Error updating donation request status:', error);
+        res.status(500).send({ message: 'Failed to update donation request status', error: error.message });
       }
     });
 

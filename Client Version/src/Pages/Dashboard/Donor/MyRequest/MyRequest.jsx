@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import useAuth from '../../../../hooks/useAuth';
 import useAxiosSecure from '../../../../hooks/useAxioSecure';
+import { FaRegEdit, FaRegEye } from 'react-icons/fa';
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const MyRequest = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
     const [donationRequests, setDonationRequests] = useState([]);
     const [statusFilter, setStatusFilter] = useState('all');
-    const [currentPage, setCurrentPage] = useState(1);
-    const requestsPerPage = 5;
 
     useEffect(() => {
         const fetchDonationRequests = async () => {
@@ -25,18 +28,70 @@ const MyRequest = () => {
 
     const filteredRequests = donationRequests;
 
-    const indexOfLastRequest = currentPage * requestsPerPage;
-    const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
-    const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+    const currentRequests = filteredRequests;
 
-    const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
-
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
+    const handleUpdateStatus = async (id, status) => {
+        try {
+            const response = await axiosSecure.patch(`/donationRequests/${id}`, { donationStatus: status });
+            if (response.data.modifiedCount > 0) {
+                setDonationRequests(donationRequests.map(request =>
+                    request._id === id ? { ...request, donationStatus: status } : request
+                ));
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: 'Updated!',
+                    text: `Donation request status has been updated to ${status}.`,
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+                
+            }
+        } catch (error) {
+            console.error("Error updating donation status:", error);
+            toast.error('Failed to update donation request status.');
+        }
     };
 
+
+
+    
+
+    const handleDelete = async (id) => {
+    
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+          }).then((result) => {
+            if (result.isConfirmed) {
+                axiosSecure.delete(`/donationRequests/${id}`)
+                .then((response) => {
+                    if (response.data.deletedCount > 0) {
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Donation Request has been deleted.",
+                            icon: "success"
+                        });
+                        setDonationRequests(donationRequests.filter(request => request._id !== id));
+                    } else {
+                        Swal.fire("Error!", "Failed to delete the request.", "error");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error deleting request:", error);
+                    Swal.fire("Error!", "Failed to delete the request.", "error");
+                });
+            }
+          });
+    }
+
     return (
-        <div className="container mx-auto mt-8">
+        <div className="container mx-auto mt-3 p-5">
             <h2 className="text-2xl font-bold mb-4">My Donation Requests</h2>
 
             <div className="flex justify-end mb-4">
@@ -57,42 +112,75 @@ const MyRequest = () => {
                 <table className="table w-full">
                     <thead>
                         <tr>
-                            <th>Recipient</th>
-                            <th>Location</th>
-                            <th>Date & Time</th>
-                            <th>Blood Group</th>
-                            <th>Status</th>
-                            <th>Donor Info</th>
-                            <th>Actions</th>
+                            <th className='text-center'>Recipient</th>
+                            <th className='text-center'>Location</th>
+                            <th className='text-center'>Date </th>
+                            <th className='text-center'>Time</th>
+                            <th className='text-center'>Blood Group</th>
+                            <th className='text-center'>Status</th>
+                            <th className='text-center'>Donor Info</th>
+                            <th className='text-center'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentRequests.map((request) => (
                             <tr key={request._id}>
-                                <td>{request.recipientName}</td>
-                                <td>{request.selectedDistrict}, {request.selectedUpazilas}</td>
-                                <td>{request.donationDate} {request.donationTime}</td>
-                                <td>{request.bloodGroup}</td>
-                                <td>{request.donationStatus}</td>
-                                <td>Donor Info</td>
-                                <td>Actions</td>
+                                <td className='text-center'>{request.recipientName}</td>
+                                <td className='text-center'>{request.selectedDistrict}, {request.selectedUpazilas}</td>
+                                <td className='text-center'>{request.donationDate} </td>
+                                <td className='text-center'>{request.donationTime} </td>
+                                <td className='text-center'>{request.bloodGroup}</td>
+                                <td className='text-center'>{request.donationStatus}</td>
+                                {request.donationStatus === 'inprogress' ? (
+                                    <td className='text-center'>
+                                        {user?.displayName}
+                                        <br />
+                                        {user?.email}
+                                    </td>
+                                ) : (
+                                    <td className='text-center'></td>
+                                )}
+                                <td>
+                                    <div className='flex gap-2 justify-center items center'>
+                                        {/* with go the details page */}
+                                        {request.donationStatus === 'inprogress' && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleUpdateStatus(request._id, 'done')}
+                                                    className='border p-1 border-green-500 text-green-500 rounded-sm text-md'>
+                                                    Done
+                                                </button>
+                                                <button
+                                                    onClick={() => handleUpdateStatus(request._id, 'canceled')}
+                                                    className='border p-1 border-red-500 text-red-500 rounded-sm text-md'>
+                                                    Cancel
+                                                </button>
+                                            </>
+                                        )}
+
+                                        <button
+                                            className='border p-2 border-gray-300 rounded-sm text-green-700 font-medium text-base'>
+                                            <FaRegEye /></button>
+
+                                        <Link to={`/dashboard/update-request/${request._id}`}>
+                                            <button
+
+                                                className='border p-2 border-gray-300 rounded-sm  text-blue-700 font-medium text-base'>
+                                                <FaRegEdit /></button>
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(request._id)}
+                                            className='border p-2 border-gray-300 rounded-sm text-redd font-medium text-base'>
+                                            <RiDeleteBin6Line /></button>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
 
-            <div className="join">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-                    <button
-                        key={pageNumber}
-                        className={`join-item btn ${currentPage === pageNumber ? 'btn-active' : ''}`}
-                        onClick={() => handlePageChange(pageNumber)}
-                    >
-                        {pageNumber}
-                    </button>
-                ))}
-            </div>
+
         </div>
     );
 };

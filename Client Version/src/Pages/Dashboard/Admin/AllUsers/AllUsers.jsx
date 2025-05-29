@@ -150,8 +150,8 @@ const AllUsers = () => {
                                     <td className="py-3 px-7 text-center border-b">
                                         {
                                             user.isBlocked ?
-                                                <span className="bg-red-300 rounded-full  px-2 text-red-900 font-medium">blocked</span> :
-                                                <span className="bg-green-300 rounded-full  px-2 text-green-900 font-medium">active</span>
+                                                <span className="bg-red-100 rounded-full  px-2 py-1 text-red-800 font-medium">blocked</span> :
+                                                <span className="bg-green-100 rounded-full  px-2 py-1 text-green-950 font-medium">active</span>
                                         }
                                     </td>
                                     <td className="py-3 px-4 text-center border-b">{user.group}</td>
