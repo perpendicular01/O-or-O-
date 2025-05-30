@@ -78,22 +78,22 @@ async function run() {
     const verifyAdminVolenteer = async (req, res, next) => {
       const email = req.user.email;
       const query = { email: email };
-    
+
       try {
         const user = await userCollection.findOne(query);
         const isAdminOrVolunteer = user?.role === 'admin' || user?.role === 'volenteer';
-    
+
         if (!isAdminOrVolunteer) {
           return res.status(403).send({ message: 'Forbidden access: Admin or Volunteer only' });
         }
-    
+
         next();
       } catch (error) {
         console.error('Error verifying role:', error);
         res.status(500).send({ message: 'Internal Server Error' });
       }
     };
-    
+
 
 
 
@@ -119,6 +119,8 @@ async function run() {
         })
         .send({ success: true })
     })
+
+
     // get users
     app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
       const status = req.query.status;
@@ -135,11 +137,44 @@ async function run() {
     })
 
     // get only users who are donor
-    app.get('/donors', verifyToken, verifyAdminVolenteer, async (req, res) => {
+    app.get('/donors', verifyToken, async (req, res) => {
       const query = { role: 'donor' };
       const result = await userCollection.find(query).toArray();
       res.send(result);
     });
+
+    // search donors by group, district, and upazila
+    app.get('/donors/search', async (req, res) => {
+      const { bloodGroup, district, upazila } = req.query;
+    
+      const query = { role: 'donor', isBlocked: false };
+    
+      if (bloodGroup) {
+        const escapedGroup = bloodGroup.replace('+', '\\+'); // escape '+' for regex
+        query.group = { $regex: new RegExp(`^${escapedGroup}$`, 'i') };
+      }
+    
+      if (district) {
+        query.district = { $regex: new RegExp(`^${district}$`, 'i') };
+      }
+    
+      if (upazila) {
+        query.upazila = { $regex: new RegExp(`^${upazila}$`, 'i') };
+      }
+    
+      console.log('Search query:', query);
+    
+      try {
+        const result = await userCollection.find(query).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error('Error fetching donors:', error);
+        res.status(500).send({ message: 'Failed to fetch donors' });
+      }
+    });
+    
+
+
 
     // add users
     app.post('/users', async (req, res) => {
@@ -351,6 +386,7 @@ async function run() {
       if (status && status !== 'all') {
         query.donationStatus = status;
       }
+      
 
       try {
         const result = await donationRequestCollection.find(query).toArray();
@@ -360,6 +396,43 @@ async function run() {
         res.status(500).send({ message: 'Failed to fetch all donation requests', error: error.message });
       }
     });
+
+    // Get all donation requests which is pending
+    app.get('/donation-request', async (req, res) => {
+      const status = req.query.status;
+      let query = {};
+      if (status) {
+        query.donationStatus = status;
+      }
+      console.log('Query for all donation requests:', query);
+      
+      try {
+        const result = await donationRequestCollection.find(query).toArray();
+        console.log(result);
+        res.send(result);
+      } catch (error) {
+        console.error('Error fetching all donation requests:', error);
+        res.status(500).send({ message: 'Failed to fetch all donation requests', error: error.message });
+      }
+    });
+    
+
+    // Get specific donation request by ID
+    app.get('/donation-requests/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+
+      try {
+        const donationRequest = await donationRequestCollection.findOne({ _id: new ObjectId(id) });
+        if (!donationRequest) {
+          return res.status(404).send({ message: 'Donation request not found' });
+        }
+        res.send(donationRequest);
+      } catch (error) {
+        console.error('Error fetching donation request:', error);
+        res.status(500).send({ message: 'Failed to fetch donation request', error: error.message });
+      }
+    });
+
 
 
     // Get donation requests by email and status
@@ -481,6 +554,20 @@ async function run() {
     app.get('/blogs', async (req, res) => {
       const result = await blogCollection.find().toArray();
       res.send(result);
+    })
+
+    app.get('/blogs/status', async (req, res) => {
+      const status = 'published'; 
+
+      const query = { status: status };
+
+      try {
+        const result = await blogCollection.find(query).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+        res.status(500).send({ message: 'Failed to fetch blogs', error: error.message });
+      }
     })
 
     // get blogs by id

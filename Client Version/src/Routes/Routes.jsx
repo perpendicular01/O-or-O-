@@ -19,6 +19,12 @@ import AddBlogs from "../Pages/Dashboard/AddBlogs/AddBlogs";
 import UpdateBlogs from "../Pages/Dashboard/AddBlogs/UpdateBlogs";
 import AllRequest from "../Pages/Dashboard/Admin/AllRequest/AllRequest";
 import PrivateRoute from "./PrivateRoute";
+import Search from "../Pages/Search/Search";
+import Blogs from "../Pages/Blogs/Blogs";
+import BlogDetails from "../Pages/Blogs/BlogDetails";
+
+import BloodDonationRequests from "../Pages/BloodDonationRequests/BloodDonationRequests";
+import BloodDonationRequestDetails from "../Pages/BloodDonationRequestDetails/BloodDonationRequestDetails";
 
 
 export const router = createBrowserRouter([
@@ -38,10 +44,33 @@ export const router = createBrowserRouter([
                 path: 'register',
                 element: <Register></Register>
             },
+            {
+                path: 'search',
+                element: <Search />,
+            },
+            {
+                path: 'blogs',
+                element: <Blogs></Blogs>
+            },
+            {
+                path: 'blog/:id',
+                element: <BlogDetails />
+            },
             
+            {
+                path: 'blood-donation-requests',
+                element: <BloodDonationRequests />
+            },
+
+        
+            {
+                path: 'blood-donation-requests/:id',
+                element: <PrivateRoute> <BloodDonationRequestDetails></BloodDonationRequestDetails> </PrivateRoute>
+            }
 
         ]
     },
+
     {
         path: 'dashboard',
         element: <PrivateRoute> <Dashboard></Dashboard> </PrivateRoute>,
@@ -88,6 +117,10 @@ export const router = createBrowserRouter([
                 path: 'content-management/update-blog/:id',
                 element: <UpdateBlogs></UpdateBlogs>,
                 loader: ({params}) => fetch(`http://localhost:5000/blogs/${params.id}`)
+            },
+            {
+                path: 'donation-request/:id',
+                element: <BloodDonationRequestDetails />
             }
 
 

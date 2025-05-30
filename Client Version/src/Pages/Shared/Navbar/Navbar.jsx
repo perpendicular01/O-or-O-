@@ -43,7 +43,7 @@ const Navbar = () => {
         </li>
         <li>
             <NavLink
-                to="request"
+                to="blood-donation-requests"
                 className={({ isActive }) => isActive ? "font-bold text-redd" : "hover:font-semibold hover:text-redd/60"}
             >
                 Blood Request
@@ -143,3 +143,12 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+// <div>
+//         <Link to="/" style={{ margin: '0 10px', color: 'white', textDecoration: 'none' }}>Home</Link>
+//         <Link to="/dashboard" style={{ margin: '0 10px', color: 'white', textDecoration: 'none' }}>Dashboard</Link>
+//         <Link to="/contact" style={{ margin: '0 10px', color: 'white', textDecoration: 'none' }}>Contact</Link>
+//       </div>
+
