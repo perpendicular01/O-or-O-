@@ -7,12 +7,14 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { CiFilter } from "react-icons/ci";
+import useAdmin from '../../../hooks/useAdmin';
 
 const ContentMangement = () => {
     const [blogs, setBlogs] = useState([]);
     const [filter, setFilter] = useState('all');
     const axiosPublic = useAxiosPublic();
     const axiosSecure = useAxioSecure()
+    const [isAdmin] = useAdmin()
 
     useEffect(() => {
         axiosPublic.get('/blogs')
@@ -118,7 +120,7 @@ const ContentMangement = () => {
                 <h2 className="text-2xl font-bold">Content Management</h2>
                 <div className="flex items-center">
                     <div className='text-2xl font-extrabold mr-2'>
-                    <CiFilter></CiFilter>
+                        <CiFilter></CiFilter>
                     </div>
                     <select
                         className="select select-bordered mr-4 w-32"
@@ -176,30 +178,36 @@ const ContentMangement = () => {
                                     </button>
                                 </Link>
 
-                                <button
-                                    onClick={() => handleDelete(blog._id)}
-                                    className='flex gap-1 px-2 py-1 text-red-500 rounded-md items-center hover:bg-red-200 hover:text-black border border-red-100'>
-                                    <div className='text-xl'>
-                                        <MdOutlineDeleteOutline />
-                                    </div>
-                                    <h2 className='font-medium'> Delete </h2>
-                                </button>
+                                {
+                                    isAdmin &&
+                                    <button
+                                        onClick={() => handleDelete(blog._id)}
+                                        className='flex gap-1 px-2 py-1 text-red-500 rounded-md items-center hover:bg-red-200 hover:text-black border border-red-100'>
+                                        <div className='text-xl'>
+                                            <MdOutlineDeleteOutline />
+                                        </div>
+                                        <h2 className='font-medium'> Delete </h2>
+                                    </button>
+                                }
                             </div >
 
                             {
-                                blog.status === 'draft' ?
-                                    <div className='flex'>
-                                    <button
-                                        className="px-4 py-1   border text-start bg-green-800 text-white font-semibold rounded-md"
-                                        onClick={() => handlePublish(blog._id)}>
-                                        Publish</button>
-                                    </div>
-                                    :
-                                    <div className='flex'>
-                                    <button className="border  border-gray-400 px-2 py-1 rounded-md font-semibold text-md "
-                                        onClick={() => handleUnpublish(blog._id)}>
-                                        Unpublish</button>
-                                    </div>
+                                isAdmin &&
+                                (
+                                    blog.status === 'draft' ?
+                                        <div className='flex'>
+                                            <button
+                                                className="px-4 py-1   border text-start bg-green-800 text-white font-semibold rounded-md"
+                                                onClick={() => handlePublish(blog._id)}>
+                                                Publish</button>
+                                        </div>
+                                        :
+                                        <div className='flex'>
+                                            <button className="border  border-gray-400 px-2 py-1 rounded-md font-semibold text-md "
+                                                onClick={() => handleUnpublish(blog._id)}>
+                                                Unpublish</button>
+                                        </div>
+                                )
                             }
                         </div >
                     </div >

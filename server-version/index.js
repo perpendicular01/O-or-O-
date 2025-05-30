@@ -75,6 +75,27 @@ async function run() {
       next();
     }
 
+    const verifyAdminVolenteer = async (req, res, next) => {
+      const email = req.user.email;
+      const query = { email: email };
+    
+      try {
+        const user = await userCollection.findOne(query);
+        const isAdminOrVolunteer = user?.role === 'admin' || user?.role === 'volenteer';
+    
+        if (!isAdminOrVolunteer) {
+          return res.status(403).send({ message: 'Forbidden access: Admin or Volunteer only' });
+        }
+    
+        next();
+      } catch (error) {
+        console.error('Error verifying role:', error);
+        res.status(500).send({ message: 'Internal Server Error' });
+      }
+    };
+    
+
+
 
     // JWT
     app.post('/jwt', async (req, res) => {
@@ -114,7 +135,7 @@ async function run() {
     })
 
     // get only users who are donor
-    app.get('/donors', verifyToken, verifyAdmin, async (req, res) => {
+    app.get('/donors', verifyToken, verifyAdminVolenteer, async (req, res) => {
       const query = { role: 'donor' };
       const result = await userCollection.find(query).toArray();
       res.send(result);
@@ -323,7 +344,7 @@ async function run() {
     });
 
     // get all donation requests and status
-    app.get('/allDonationRequests', verifyToken, verifyAdmin, async (req, res) => {
+    app.get('/allDonationRequests', verifyToken, verifyAdminVolenteer, async (req, res) => {
       const status = req.query.status;
 
       let query = {};
@@ -501,7 +522,7 @@ async function run() {
     });
 
     // update blogs status by id
-    app.patch('/blogs/:id', verifyToken, async (req, res) => {
+    app.patch('/blogs/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const { status } = req.body;
 

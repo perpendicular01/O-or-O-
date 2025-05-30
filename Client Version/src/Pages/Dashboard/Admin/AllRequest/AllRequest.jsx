@@ -6,12 +6,16 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
+import useAdmin from '../../../../hooks/useAdmin';
+import useVolenteer from '../../../../hooks/useVolenteer';
 
 const AllRequest = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
     const [donationRequests, setDonationRequests] = useState([]);
     const [statusFilter, setStatusFilter] = useState('all');
+    const [isAdmin] = useAdmin();
+
 
     useEffect(() => {
         const fetchDonationRequests = async () => {
@@ -44,8 +48,8 @@ const AllRequest = () => {
                     text: `Donation request status has been updated to ${status}.`,
                     showConfirmButton: false,
                     timer: 1500
-                  });
-                
+                });
+
             }
         } catch (error) {
             console.error("Error updating donation status:", error);
@@ -55,10 +59,10 @@ const AllRequest = () => {
 
 
 
-    
+
 
     const handleDelete = async (id) => {
-    
+
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -67,27 +71,27 @@ const AllRequest = () => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!"
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
                 axiosSecure.delete(`/donationRequests/${id}`)
-                .then((response) => {
-                    if (response.data.deletedCount > 0) {
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Donation Request has been deleted.",
-                            icon: "success"
-                        });
-                        setDonationRequests(donationRequests.filter(request => request._id !== id));
-                    } else {
+                    .then((response) => {
+                        if (response.data.deletedCount > 0) {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Donation Request has been deleted.",
+                                icon: "success"
+                            });
+                            setDonationRequests(donationRequests.filter(request => request._id !== id));
+                        } else {
+                            Swal.fire("Error!", "Failed to delete the request.", "error");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error deleting request:", error);
                         Swal.fire("Error!", "Failed to delete the request.", "error");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error deleting request:", error);
-                    Swal.fire("Error!", "Failed to delete the request.", "error");
-                });
+                    });
             }
-          });
+        });
     }
 
     return (
@@ -141,8 +145,8 @@ const AllRequest = () => {
                                     <td className='text-center'></td>
                                 )}
                                 <td>
-                                    <div className='flex gap-2 justify-center items center'>
-                                        {/* with go the details page */}
+                                    <div className='flex gap-2 justify-center items-center'>
+                                        {/* Only show Done/Cancel buttons if status is 'inprogress' */}
                                         {request.donationStatus === 'inprogress' && (
                                             <>
                                                 <button
@@ -157,23 +161,34 @@ const AllRequest = () => {
                                                 </button>
                                             </>
                                         )}
-
                                         <button
                                             className='border p-2 border-gray-300 rounded-sm text-green-700 font-medium text-base'>
-                                            <FaRegEye /></button>
+                                            <FaRegEye />
+                                        </button>
 
-                                        <Link to={`/dashboard/update-request/${request._id}`}>
-                                            <button
 
-                                                className='border p-2 border-gray-300 rounded-sm  text-blue-700 font-medium text-base'>
-                                                <FaRegEdit /></button>
-                                        </Link>
-                                        <button
-                                            onClick={() => handleDelete(request._id)}
-                                            className='border p-2 border-gray-300 rounded-sm text-redd font-medium text-base'>
-                                            <RiDeleteBin6Line /></button>
+                                        {/* Show admin-only buttons */}
+                                        {isAdmin && (
+                                            <>
+
+
+                                                <Link to={`/dashboard/update-request/${request._id}`}>
+                                                    <button
+                                                        className='border p-2 border-gray-300 rounded-sm text-blue-700 font-medium text-base'>
+                                                        <FaRegEdit />
+                                                    </button>
+                                                </Link>
+
+                                                <button
+                                                    onClick={() => handleDelete(request._id)}
+                                                    className='border p-2 border-gray-300 rounded-sm text-red-600 font-medium text-base'>
+                                                    <RiDeleteBin6Line />
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </td>
+
                             </tr>
                         ))}
                     </tbody>

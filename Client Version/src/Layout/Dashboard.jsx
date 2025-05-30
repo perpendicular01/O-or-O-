@@ -280,7 +280,7 @@ const Dashboard = () => {
 
                             <li>
                                 <NavLink
-                                    to="/dashboard/my-donation-requests"
+                                    to="/dashboard/all-blood-donation-request"
                                     className={({ isActive }) =>
                                         isActive
                                             ? 'bg-redd text-white rounded-lg'
@@ -299,7 +299,7 @@ const Dashboard = () => {
 
                             <li>
                                 <NavLink
-                                    to="/dashboard/create-donation-request"
+                                    to="/dashboard/content-management"
                                     className={({ isActive }) =>
                                         isActive
                                             ? 'bg-redd text-white rounded-lg'
