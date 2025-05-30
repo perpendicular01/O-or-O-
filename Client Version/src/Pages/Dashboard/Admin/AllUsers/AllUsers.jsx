@@ -7,19 +7,20 @@ import 'react-toastify/dist/ReactToastify.css';
 const AllUsers = () => {
     const axiosSecure = useAxiosSecure();
     const [users, setUsers] = useState([]);
+    const [statusFilter, setStatusFilter] = useState('all');
 
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await axiosSecure.get('/users');
+                const res = await axiosSecure.get(`/users?status=${statusFilter}`);
                 setUsers(res.data);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         };
         fetchUsers();
-    }, [axiosSecure]);
+    }, [axiosSecure, statusFilter]);
 
     console.log(users)
 
@@ -112,10 +113,14 @@ const AllUsers = () => {
             <div className="flex justify-between items-center mb-4 mt-2">
                 <h2 className="text-2xl font-semibold">All Users</h2>
                 <div>
-                    <select className="border border-gray-300 rounded-md p-2 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option>All Status</option>
-                        <option>Active</option>
-                        <option>Blocked</option>
+                    <select
+                        className="border border-gray-300 w-32 rounded-md p-2 shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value.toLowerCase())}
+                    >
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="blocked">Blocked</option>
                     </select>
                 </div>
             </div>
@@ -169,7 +174,7 @@ const AllUsers = () => {
                                                     {user.isBlocked ? (
                                                         <button
                                                             onClick={() => handleUnblockUser(user._id)}
-                                                           className="bg-green-800 font-medium text-white text-sm px-4 py-1 rounded-4xl"
+                                                            className="bg-green-800 font-medium text-white text-sm px-4 py-1 rounded-4xl"
                                                         >
                                                             Unblock
                                                         </button>

@@ -13,6 +13,12 @@ import Profile from "../Pages/Dashboard/Profile/Profile";
 import DonorHome from "../Pages/Dashboard/Donor/DonorHome/DonorHome";
 import AllUsers from "../Pages/Dashboard/Admin/AllUsers/AllUsers";
 import UpdateRequest from "../Pages/Dashboard/UpdateRequest/UpdateRequest";
+import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
+import ContentMangement from "../Pages/Dashboard/ContentManagement/ContentMangement";
+import AddBlogs from "../Pages/Dashboard/AddBlogs/AddBlogs";
+import UpdateBlogs from "../Pages/Dashboard/AddBlogs/UpdateBlogs";
+import AllRequest from "../Pages/Dashboard/Admin/AllRequest/AllRequest";
+import PrivateRoute from "./PrivateRoute";
 
 
 export const router = createBrowserRouter([
@@ -38,11 +44,11 @@ export const router = createBrowserRouter([
     },
     {
         path: 'dashboard',
-        element: <Dashboard></Dashboard>,
+        element: <PrivateRoute> <Dashboard></Dashboard> </PrivateRoute>,
         children: [
             {
                 path: '',
-                element: <DonorHome></DonorHome>
+                element: <PrivateRoute> <DashboardHome></DashboardHome> </PrivateRoute>
             },
             {
                 path: 'profile',
@@ -61,10 +67,29 @@ export const router = createBrowserRouter([
                 element: <AllUsers></AllUsers>
             },
             {
+                path: 'all-blood-donation-request',
+                element: <AllRequest></AllRequest>
+            },
+            {
                 path: 'update-request/:id',
                 element: <UpdateRequest></UpdateRequest>,
                 loader: ({ params }) => fetch(`http://localhost:5000/donationRequests/${params.id}`),
+            },
+            {
+                path: 'content-management',
+                element: <ContentMangement></ContentMangement>,
+                
+            },
+            {
+                path: 'content-management/add-blog',
+                element: <AddBlogs></AddBlogs>
+            },
+            {
+                path: 'content-management/update-blog/:id',
+                element: <UpdateBlogs></UpdateBlogs>,
+                loader: ({params}) => fetch(`http://localhost:5000/blogs/${params.id}`)
             }
+
 
         ]
     },

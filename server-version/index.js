@@ -59,6 +59,7 @@ async function run() {
     const database = client.db('OorO')
     const userCollection = database.collection('users')
     const donationRequestCollection = database.collection('donationRequests');
+    const blogCollection = database.collection('blogs')
 
     // verify the admin 
     const verifyAdmin = async (req, res, next) => {
@@ -97,13 +98,29 @@ async function run() {
         })
         .send({ success: true })
     })
-    // users
+    // get users
     app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
-      const result = await userCollection.find().toArray();
+      const status = req.query.status;
+
+      let query = {};
+      if (status === 'active') {
+        query.isBlocked = false;
+      } else if (status === 'blocked') {
+        query.isBlocked = true;
+      }
+
+      const result = await userCollection.find(query).toArray();
       res.send(result);
     })
 
+    // get only users who are donor
+    app.get('/donors', verifyToken, verifyAdmin, async (req, res) => {
+      const query = { role: 'donor' };
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    });
 
+    // add users
     app.post('/users', async (req, res) => {
       const user = req.body;
       // check if the email user exist or not
@@ -180,6 +197,7 @@ async function run() {
       res.send({ admin: isAdmin });
     });
 
+    // check donor or not
     app.get('/users/donor/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
 
@@ -206,6 +224,7 @@ async function run() {
     });
 
 
+    // get users sppecific profile
     app.get('/users/profile/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
 
@@ -228,6 +247,7 @@ async function run() {
       }
     });
 
+    // update users profile
     app.patch('/users/profile/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
 
@@ -254,6 +274,7 @@ async function run() {
       }
     });
 
+    // delete users
     app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
       const { id } = req.params;
 
@@ -301,6 +322,25 @@ async function run() {
       }
     });
 
+    // get all donation requests and status
+    app.get('/allDonationRequests', verifyToken, verifyAdmin, async (req, res) => {
+      const status = req.query.status;
+
+      let query = {};
+      if (status && status !== 'all') {
+        query.donationStatus = status;
+      }
+
+      try {
+        const result = await donationRequestCollection.find(query).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error('Error fetching all donation requests:', error);
+        res.status(500).send({ message: 'Failed to fetch all donation requests', error: error.message });
+      }
+    });
+
+
     // Get donation requests by email and status
     app.get('/donationRequests', verifyToken, async (req, res) => {
       const userEmail = req.query.email;
@@ -316,9 +356,9 @@ async function run() {
       }
 
       try {
-        const donationRequestCollection = database.collection('donationRequests');
-        const donationRequests = await donationRequestCollection.find(query).toArray();
-        res.send(donationRequests);
+
+        const result = await donationRequestCollection.find(query).toArray();
+        res.send(result);
       } catch (error) {
         console.error('Error fetching donation requests:', error);
         res.status(500).send({ message: 'Failed to fetch donation requests', error: error.message });
@@ -405,6 +445,102 @@ async function run() {
       } catch (error) {
         console.error('Error updating donation request status:', error);
         res.status(500).send({ message: 'Failed to update donation request status', error: error.message });
+      }
+    });
+
+
+    // post blogs
+    app.post('/blogs', async (req, res) => {
+      const blogs = req.body;
+      const result = await blogCollection.insertOne(blogs);
+      res.send(result)
+    })
+
+    // get blogs
+    app.get('/blogs', async (req, res) => {
+      const result = await blogCollection.find().toArray();
+      res.send(result);
+    })
+
+    // get blogs by id
+    app.get('/blogs/:id', async (req, res) => {
+      const id = req.params.id;
+
+      try {
+        const blogs = await blogCollection.findOne({ _id: new ObjectId(id) });
+        if (!blogs) {
+          return res.status(404).send({ message: 'blogs  not found' });
+        }
+        res.send(blogs);
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+        res.status(500).send({ message: 'Failed to fetch blogs', error: error.message });
+      }
+    });
+
+    // update blogs by id
+    app.put('/blogs/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const blogs = req.body;
+
+      try {
+        const result = await blogCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: blogs }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).send({ message: 'blogs not found' });
+        }
+
+        res.send({ success: true, modifiedCount: result.modifiedCount });
+      } catch (error) {
+        console.error('Error updating blogs:', error);
+        res.status(500).send({ message: 'Failed to update blogs', error: error.message });
+      }
+    });
+
+    // update blogs status by id
+    app.patch('/blogs/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const { status } = req.body;
+
+      try {
+        const result = await blogCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { status: status } }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).send({ message: 'blogs not found' });
+        }
+
+        res.send({ success: true, modifiedCount: result.modifiedCount });
+      } catch (error) {
+        console.error('Error updating blogs status:', error);
+        res.status(500).send({ message: 'Failed to update blogs status', error: error.message });
+      }
+    });
+
+    // DELETE BLOGS
+    app.delete('/blogs/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const { id } = req.params;
+
+      try {
+        const query = { _id: new ObjectId(id) };
+        const user = await blogCollection.findOne(query);
+
+        if (!user) {
+          return res.status(404).json({ message: 'blogs not found in database' });
+        }
+
+
+        const deleteResult = await blogCollection.deleteOne(query);
+        res.send({ success: true, deletedCount: deleteResult.deletedCount });
+
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ message: 'Failed to delete blogs' });
       }
     });
 
