@@ -652,6 +652,34 @@ async function run() {
       }
     });
 
+    // update donation request when confirm by donor
+    app.patch('/donation-requests/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const { status, donorName, donorEmail } = req.body;
+
+      try {
+        const result = await donationRequestCollection.updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              donationStatus: status,
+              donorName: donorName,
+              donorEmail: donorEmail
+            }
+          }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).send({ message: 'Donation request not found' });
+        }
+
+        res.send({ success: true, modifiedCount: result.modifiedCount });
+      } catch (error) {
+        console.error('Error updating donation request status:', error);
+        res.status(500).send({ message: 'Failed to update donation request status', error: error.message });
+      }
+    });
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");

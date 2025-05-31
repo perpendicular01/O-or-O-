@@ -96,7 +96,7 @@ const AllRequest = () => {
 
     return (
         <div className="container mx-auto mt-3 p-5">
-            <h2 className="text-2xl font-bold mb-4">My Donation Requests</h2>
+            <h2 className="text-2xl font-bold mb-4">Donation Requests</h2>
 
             <div className="flex justify-end mb-4">
                 <select
@@ -137,9 +137,9 @@ const AllRequest = () => {
                                 <td className='text-center'>{request.donationStatus}</td>
                                 {request.donationStatus === 'inprogress' ? (
                                     <td className='text-center'>
-                                        {user?.displayName}
+                                        {request.donorName}
                                         <br />
-                                        {user?.email}
+                                        {request.donorEmail}
                                     </td>
                                 ) : (
                                     <td className='text-center'></td>
