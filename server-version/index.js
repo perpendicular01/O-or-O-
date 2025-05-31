@@ -63,7 +63,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
 
 
@@ -100,7 +100,7 @@ async function run() {
 
         next();
       } catch (error) {
-        console.error('Error verifying role:', error);
+        // console.error('Error verifying role:', error);
         res.status(500).send({ message: 'Internal Server Error' });
       }
     };
@@ -175,13 +175,13 @@ async function run() {
         query.upazila = { $regex: new RegExp(`^${upazila}$`, 'i') };
       }
 
-      console.log('Search query:', query);
+      // console.log('Search query:', query);
 
       try {
         const result = await userCollection.find(query).toArray();
         res.send(result);
       } catch (error) {
-        console.error('Error fetching donors:', error);
+        // console.error('Error fetching donors:', error);
         res.status(500).send({ message: 'Failed to fetch donors' });
       }
     });
@@ -729,8 +729,8 @@ async function run() {
     });
 
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();

@@ -136,7 +136,7 @@ const Home = () => {
                             </div>
                         </form>
                         <div className="mt-4 text-center font-medium">
-                            <p>Contact Number: 123-456-7890</p>
+                            <p>Contact Number: 01630667162</p>
                         </div>
                     </div>
                 </div>
