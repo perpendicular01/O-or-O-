@@ -17,7 +17,11 @@ const cookieParser = require('cookie-parser')
 const app = express()
 
 app.use(cors({
-  origin: ['http://localhost:5173'],
+  origin: [
+    'http://localhost:5173',
+    'https://o-positive-or-o-negative.web.app',
+    'https://o-positive-or-o-negative.firebaseapp.com'
+  ],
   credentials: true
 }))
 app.use(express.json())
@@ -112,7 +116,8 @@ async function run() {
       res
         .cookie('token', token, {
           httpOnly: true,
-          secure: false
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
 
         })
         .send({ success: true })
@@ -122,7 +127,8 @@ async function run() {
       res.
         clearCookie('token', {
           httpOnly: true,
-          secure: false
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         })
         .send({ success: true })
     })
@@ -153,24 +159,24 @@ async function run() {
     // search donors by group, district, and upazila
     app.get('/donors/search', async (req, res) => {
       const { bloodGroup, district, upazila } = req.query;
-    
+
       const query = { role: 'donor', isBlocked: false };
-    
+
       if (bloodGroup) {
         const escapedGroup = bloodGroup.replace('+', '\\+'); // escape '+' for regex
         query.group = { $regex: new RegExp(`^${escapedGroup}$`, 'i') };
       }
-    
+
       if (district) {
         query.district = { $regex: new RegExp(`^${district}$`, 'i') };
       }
-    
+
       if (upazila) {
         query.upazila = { $regex: new RegExp(`^${upazila}$`, 'i') };
       }
-    
+
       console.log('Search query:', query);
-    
+
       try {
         const result = await userCollection.find(query).toArray();
         res.send(result);
@@ -179,7 +185,7 @@ async function run() {
         res.status(500).send({ message: 'Failed to fetch donors' });
       }
     });
-    
+
 
 
 
@@ -199,15 +205,15 @@ async function run() {
     // delete users
     app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
       const { id } = req.params;
-    
+
       try {
         const query = { _id: new ObjectId(id) };
         const user = await userCollection.findOne(query);
-    
+
         if (!user) {
           return res.status(404).json({ message: 'User not found in database' });
         }
-    
+
         // Attempt to delete from Firebase Auth if firebaseUid exists
         if (user.firebaseUid) {
           try {
@@ -220,10 +226,10 @@ async function run() {
             }
           }
         }
-    
+
         // Delete from MongoDB
         const deleteResult = await userCollection.deleteOne(query);
-    
+
         res.send({ success: true, deletedCount: deleteResult.deletedCount });
       } catch (error) {
         console.error("Error deleting user:", error);
@@ -428,7 +434,7 @@ async function run() {
       if (status && status !== 'all') {
         query.donationStatus = status;
       }
-      
+
 
       try {
         const result = await donationRequestCollection.find(query).toArray();
@@ -447,7 +453,7 @@ async function run() {
         query.donationStatus = status;
       }
       console.log('Query for all donation requests:', query);
-      
+
       try {
         const result = await donationRequestCollection.find(query).toArray();
         console.log(result);
@@ -457,7 +463,7 @@ async function run() {
         res.status(500).send({ message: 'Failed to fetch all donation requests', error: error.message });
       }
     });
-    
+
 
     // Get specific donation request by ID
     app.get('/donation-requests/:id', verifyToken, async (req, res) => {
@@ -599,7 +605,7 @@ async function run() {
     })
 
     app.get('/blogs/status', async (req, res) => {
-      const status = 'published'; 
+      const status = 'published';
 
       const query = { status: status };
 

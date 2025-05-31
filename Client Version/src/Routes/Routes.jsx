@@ -113,7 +113,7 @@ export const router = createBrowserRouter([
             {
                 path: 'update-request/:id',
                 element: <UpdateRequest></UpdateRequest>,
-                loader: ({ params }) => fetch(`http://localhost:5000/donationRequests/${params.id}`),
+                loader: ({ params }) => fetch(`https://pdpepe-blood-management.vercel.app/donationRequests/${params.id}`),
             },
             {
                 path: 'content-management',
@@ -127,7 +127,7 @@ export const router = createBrowserRouter([
             {
                 path: 'content-management/update-blog/:id',
                 element: <UpdateBlogs></UpdateBlogs>,
-                loader: ({params}) => fetch(`http://localhost:5000/blogs/${params.id}`)
+                loader: ({params}) => fetch(`https://pdpepe-blood-management.vercel.app/blogs/${params.id}`)
             },
             {
                 path: 'donation-request/:id',

@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 
 import { FaEye, FaEyeSlash, FaFacebookF, FaGithub, FaGoogle } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+
 import Lottie from "lottie-react";
 
 import { useForm } from "react-hook-form"
@@ -27,11 +28,14 @@ const Register = () => {
 
     const axiosPublic = useAxiosPublic()
 
-
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const location = useLocation()
     // console.log(location)
     const from = location.state?.from?.pathname || '/'
+
+    const goToLogin = () => {
+        navigate('/auth/login');
+    }
 
     const {
         register,
@@ -324,9 +328,9 @@ const Register = () => {
 
                 <p className=" pt-3 text-center">
                     Already registered?
-                    <Link to="/auth/login">
+                    <button onClick={goToLogin}>
                         <span className="font-semibold text-redd/80  hover:text-redd hover:font-bold"> Go to log in </span>
-                    </Link>
+                    </button>
                 </p>
 
                 <p className="text-blackk/90 font-medium pt-3 text-center">Or sign up with</p>

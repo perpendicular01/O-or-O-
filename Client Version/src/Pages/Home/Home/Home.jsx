@@ -66,7 +66,7 @@ const Home = () => {
                 <div className="container mx-auto px-4">
                     <h2 className="text-4xl lg:text-5xl font-stylish font-semibold text-center text-redd mb-8">Our Features </h2>
                     <p className='border-b-[3px] border-redd rounded-4xl w-18 mx-auto  -mt-5 mb-10'></p>
-                    <div className="w-full mx-auto lg:w-[80%]  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <div className="w-full pl-10 md:pl-0 mx-auto lg:w-[80%]  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                         {/* Featured Donation Request Card */}
                         <div className="card bg-redd/5 w-80 shadow-xl">
                             <figure className="px-10 pt-10">

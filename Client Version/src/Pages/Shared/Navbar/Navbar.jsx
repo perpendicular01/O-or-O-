@@ -115,7 +115,7 @@ const Navbar = () => {
                         :
                         <div className="flex items-center gap-2 md:gap-4 ">
                             
-                            <Link to="auth/login">
+                            <Link to="/auth/login">
                                 <button className={`px-2 md:px-3 lg:px-3 py-1 lg:py-1 rounded-lg text-sm md:text-base font-medium ${path === 'auth/login' ? "text-white bg-redd hover:bg-redd/90" : "bg-redd/90 text-white"}`}>
                                     Login
                                 </button>
