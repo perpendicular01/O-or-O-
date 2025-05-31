@@ -161,10 +161,13 @@ const AllRequest = () => {
                                                 </button>
                                             </>
                                         )}
-                                        <button
-                                            className='border p-2 border-gray-300 rounded-sm text-green-700 font-medium text-base'>
-                                            <FaRegEye />
-                                        </button>
+                                        <Link to={`/blood-donation-requests/${request._id}`}>
+                                            <button
+                                                className={`border p-2 border-gray-300 rounded-sm text-green-700 font-medium text-base ${request.donationStatus !== 'pending' ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                disabled={request.donationStatus !== 'pending'}
+                                            >
+                                                <FaRegEye /></button>
+                                        </Link>
 
 
                                         {/* Show admin-only buttons */}
@@ -174,9 +177,10 @@ const AllRequest = () => {
 
                                                 <Link to={`/dashboard/update-request/${request._id}`}>
                                                     <button
-                                                        className='border p-2 border-gray-300 rounded-sm text-blue-700 font-medium text-base'>
-                                                        <FaRegEdit />
-                                                    </button>
+                                                        className={`border p-2 border-gray-300 rounded-sm  text-blue-700 font-medium text-base ${request.donationStatus !== 'pending' ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                        disabled={request.donationStatus !== 'pending'}
+                                                    >
+                                                        <FaRegEdit /></button>
                                                 </Link>
 
                                                 <button
@@ -201,3 +205,5 @@ const AllRequest = () => {
 };
 
 export default AllRequest;
+
+

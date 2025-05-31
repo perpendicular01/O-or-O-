@@ -4,6 +4,13 @@ const port = process.env.PORT || 5000;
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccountKey.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+
 
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
@@ -74,7 +81,7 @@ async function run() {
 
       next();
     }
-
+    // verify the admin or volenteer
     const verifyAdminVolenteer = async (req, res, next) => {
       const email = req.user.email;
       const query = { email: email };
@@ -188,6 +195,41 @@ async function run() {
       const result = await userCollection.insertOne(user);
       res.send(result)
     })
+
+    // delete users
+    app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const { id } = req.params;
+    
+      try {
+        const query = { _id: new ObjectId(id) };
+        const user = await userCollection.findOne(query);
+    
+        if (!user) {
+          return res.status(404).json({ message: 'User not found in database' });
+        }
+    
+        // Attempt to delete from Firebase Auth if firebaseUid exists
+        if (user.firebaseUid) {
+          try {
+            await admin.auth().deleteUser(user.firebaseUid);
+          } catch (firebaseError) {
+            if (firebaseError.code === 'auth/user-not-found') {
+              console.warn(`Firebase user not found: ${user.firebaseUid} — skipping Firebase delete`);
+            } else {
+              throw firebaseError; // Rethrow unexpected errors
+            }
+          }
+        }
+    
+        // Delete from MongoDB
+        const deleteResult = await userCollection.deleteOne(query);
+    
+        res.send({ success: true, deletedCount: deleteResult.deletedCount });
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ message: 'Failed to delete user' });
+      }
+    });
 
     // toggle user block status
     app.patch('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
