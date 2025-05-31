@@ -324,7 +324,7 @@ const Register = () => {
 
                 <p className=" pt-3 text-center">
                     Already registered?
-                    <Link to="/login">
+                    <Link to="/auth/login">
                         <span className="font-semibold text-redd/80  hover:text-redd hover:font-bold"> Go to log in </span>
                     </Link>
                 </p>

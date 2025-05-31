@@ -5,9 +5,14 @@ import { IoAddCircleSharp } from 'react-icons/io5';
 import search from '../../../assets/Home/search.png';
 import fund from '../../../assets/Home/fund.png';
 import idea from '../../../assets/Home/idea.png';
+import { Link } from 'react-router-dom';
+import useAuth from '../../../hooks/useAuth';
 
 
 const Home = () => {
+    const user = useAuth();
+    console.log('User:', user);
+
     return (
         <div className='pt-10'>
             {/* Banner Section */}
@@ -22,18 +27,34 @@ const Home = () => {
                 {/* show in middle and large in small it hidden */}
                 <div className=''>
                     <div className='flex flex-col md:flex-row items-start md:items-center gap-2 pl-6 md:pl-10 lg:pl-20 pt-3 md:pt-10'>
-                        <button className='btn px-2 py-0.5 md:px-3 md:py-1 rounded-full  bg-redd text-white flex justify-center items-center'>
-                            <div className='text-base'>
-                                <IoAddCircleSharp />
-                            </div>
-                            <h2 className='text-sm'>Join as Donnor</h2>
-                        </button>
-                        <button className='btn px-2 md:px-3 md:py-1 rounded-full border-redd  text-redd flex justify-center items-center gap-1'>
-                            <div className='text-base'>
-                                <CiSearch />
-                            </div>
-                            <h2 className='text-sm'>search donors</h2>
-                        </button>
+                        {user.user?.email ? (
+                            <button
+                                className='btn px-2 py-0.5 md:px-3 md:py-1 rounded-full  bg-redd text-white flex justify-center items-center'
+                                disabled
+                            >
+                                <div className='text-base'>
+                                    <IoAddCircleSharp />
+                                </div>
+                                <h2 className='text-sm'>Join as Donnor</h2>
+                            </button>
+                        ) : (
+                            <Link to="/auth/register">
+                                <button className='btn px-2 py-0.5 md:px-3 md:py-1 rounded-full  bg-redd text-white flex justify-center items-center'>
+                                    <div className='text-base'>
+                                        <IoAddCircleSharp />
+                                    </div>
+                                    <h2 className='text-sm'>Join as Donnor</h2>
+                                </button>
+                            </Link>
+                        )}
+                        <Link to="/search">
+                            <button className='btn px-2 md:px-3 md:py-1 rounded-full border-redd  text-redd flex justify-center items-center gap-1'>
+                                <div className='text-base'>
+                                    <CiSearch />
+                                </div>
+                                <h2 className='text-sm'>search donors</h2>
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -57,7 +78,7 @@ const Home = () => {
                             <div className="card-body items-center text-center">
                                 <h2 className="card-title text-xl">Search Donors Easily</h2>
                                 <p className='text-sm  text-gray-600 w-[80%] mx-auto'>Find donors based on blood group, district with a few clicks.</p>
-                                
+
                             </div>
                         </div>
                         {/* Featured Donation Request Card */}
@@ -71,7 +92,7 @@ const Home = () => {
                             <div className="card-body items-center text-center">
                                 <h2 className="card-title text-xl">Educational Blogs</h2>
                                 <p className='text-sm text-gray-600 w-[80%] mx-auto'>Discover the truth behind common blood donation misconceptions and donate with confidence.</p>
-                                
+
                             </div>
                         </div>
                         {/* Featured Donation Request Card */}
@@ -85,15 +106,15 @@ const Home = () => {
                             <div className="card-body items-center text-center">
                                 <h2 className="card-title text-xl">Funding System</h2>
                                 <p className='text-sm text-gray-600 w-[80%] mx-auto'>Support life-saving initiatives by securely donating funds to our verified blood donation programs.</p>
-                                
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-           {/* Contact Us Section */}
-           <div className="py-12 bg-base-200">
+            {/* Contact Us Section */}
+            <div className="py-12 bg-base-200">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Contact Us</h2>
                     <div className="max-w-lg mx-auto p-6 rounded-lg shadow-xl bg-redd/5">
@@ -111,7 +132,7 @@ const Home = () => {
                                 <textarea className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" placeholder="Your Message" rows="4"></textarea>
                             </div>
                             <div className='flex items-center justify-center'>
-                                 <button className="btn bg-redd text-white px-28  rounded-md">Submit</button>
+                                <button className="btn bg-redd text-white px-28  rounded-md">Submit</button>
                             </div>
                         </form>
                         <div className="mt-4 text-center font-medium">

@@ -15,7 +15,7 @@ const BloodDonationRequestDetails = () => {
 
     useEffect(() => {
         if (!user && !loading) {
-            navigate('/login');
+            navigate('auth/login');
             return;
         }
 

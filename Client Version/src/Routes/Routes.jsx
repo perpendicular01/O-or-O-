@@ -4,6 +4,7 @@ import {
 } from "react-router-dom";
 import Home from "../Pages/Home/Home/Home";
 import Main from "../Layout/Main";
+import AuthLayout from "../Layout/AuthLayout";
 import Login from "../Pages/Login/Login";
 import Register from "../Pages/Register/Register";
 import Dashboard from "../Layout/Dashboard";
@@ -26,6 +27,7 @@ import BlogDetails from "../Pages/Blogs/BlogDetails";
 import BloodDonationRequests from "../Pages/BloodDonationRequests/BloodDonationRequests";
 import BloodDonationRequestDetails from "../Pages/BloodDonationRequestDetails/BloodDonationRequestDetails";
 import AdminRoute from "./AdminRoute";
+import AdminVolenteerRoute from "./AdminVolenteerRoute";
 
 
 export const router = createBrowserRouter([
@@ -36,14 +38,6 @@ export const router = createBrowserRouter([
             {
                 path: '/',
                 element: <Home></Home>
-            },
-            {
-                path: 'login',
-                element: <Login></Login>
-            },
-            {
-                path: 'register',
-                element: <Register></Register>
             },
             {
                 path: 'search',
@@ -71,6 +65,22 @@ export const router = createBrowserRouter([
 
         ]
     },
+    {
+        path: 'auth',
+        element: <AuthLayout></AuthLayout>,
+        children: [
+            {
+                path: 'login',
+                element: <Login></Login>
+
+            },
+            {
+                path: 'register',
+                element: <Register></Register>
+            }
+        ]
+    },
+    
 
     {
         path: 'dashboard',
@@ -78,7 +88,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: '',
-                element: <PrivateRoute> <DashboardHome></DashboardHome> </PrivateRoute>
+                element: <DashboardHome></DashboardHome> 
             },
             {
                 path: 'profile',
@@ -94,11 +104,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'all-users',
-                element: <AdminRoute> <AllUsers></AllUsers> </AdminRoute>
+                element: <AdminRoute> <AllUsers></AllUsers>  </AdminRoute>
             },
             {
                 path: 'all-blood-donation-request',
-                element: <AllRequest></AllRequest>
+                element: <AdminVolenteerRoute><AllRequest></AllRequest></AdminVolenteerRoute>
             },
             {
                 path: 'update-request/:id',
@@ -107,12 +117,12 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'content-management',
-                element: <ContentMangement></ContentMangement>,
+                element: <AdminVolenteerRoute> <ContentMangement></ContentMangement> </AdminVolenteerRoute>,
                 
             },
             {
                 path: 'content-management/add-blog',
-                element: <AddBlogs></AddBlogs>
+                element: <AdminVolenteerRoute> <AddBlogs></AddBlogs> </AdminVolenteerRoute>
             },
             {
                 path: 'content-management/update-blog/:id',

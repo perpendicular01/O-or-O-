@@ -163,12 +163,14 @@ const ContentMangement = () => {
 
 
                             <div className="card-actions flex items-center gap-3 mt-3">
+                                <Link to={`/blog/${blog._id}`}>
                                 <button className='flex gap-1 px-2 py-1 rounded-md items-center border border-gray-300'>
                                     <div className='text-lg'>
                                         <MdOutlineRemoveRedEye></MdOutlineRemoveRedEye>
                                     </div>
                                     <h2 className='font-medium'> View </h2>
                                 </button>
+                                </Link>
                                 <Link to={`/dashboard/content-management/update-blog/${blog._id}`}>
                                     <button className='flex gap-1 text-blue-500 px-2 py-1 rounded-md hover:bg-blue-200 hover:text-black items-center border border-blue-200'>
                                         <div className='text-lg'>

@@ -35,7 +35,7 @@ const Dashboard = () => {
 
         try {
             await logOut()
-            navigate('/login')
+            navigate('auth/login')
         }
         catch { /* empty */ }
     }

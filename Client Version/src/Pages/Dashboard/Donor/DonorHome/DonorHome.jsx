@@ -135,7 +135,7 @@ const DonorHome = () => {
                                     <td>
                                         <div className='flex gap-2 justify-center items center'>
                                             {/* with go the details page */}
-                                             {request.donationStatus === 'inprogress' && (
+                                            {request.donationStatus === 'inprogress' && (
                                                 <>
                                                     <button
                                                         onClick={() => handleUpdateStatus(request._id, 'done')}
@@ -150,16 +150,19 @@ const DonorHome = () => {
                                                 </>
                                             )}
 
-                                            <Link to={`/donation-request/${request._id}`}>
+                                            <Link to={`/blood-donation-requests/${request._id}`}>
                                                 <button
-                                                    className='border p-2 border-gray-300 rounded-sm text-green-700 font-medium text-base'>
+                                                    className={`border p-2 border-gray-300 rounded-sm text-green-700 font-medium text-base ${request.donationStatus !== 'pending' ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                    disabled={request.donationStatus !== 'pending'}
+                                                >
                                                     <FaRegEye /></button>
                                             </Link>
 
                                             <Link to={`/dashboard/update-request/${request._id}`}>
                                                 <button
-
-                                                    className='border p-2 border-gray-300 rounded-sm text-blue-700 font-medium text-base'>
+                                                    className={`border p-2 border-gray-300 rounded-sm  text-blue-700 font-medium text-base ${request.donationStatus !== 'pending' ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                    disabled={request.donationStatus !== 'pending'}
+                                                >
                                                     <FaRegEdit /></button>
                                             </Link>
                                             <button
